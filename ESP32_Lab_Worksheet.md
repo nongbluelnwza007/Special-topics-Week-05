@@ -367,25 +367,36 @@ Memory analysis complete!
 
 | Memory Section | Variable/Function | Address (ที่แสดงออกมา) | Memory Type |
 |----------------|-------------------|----------------------|-------------|
-| Stack | stack_var | 0x_______ | SRAM |
-| Global SRAM | sram_buffer | 0x_______ | SRAM |
-| Flash | flash_string | 0x_______ | Flash |
-| Heap | heap_ptr | 0x_______ | SRAM |
+| Stack | stack_var | 0x3ffb4550 | SRAM |
+| Global SRAM | sram_buffer | 0x3ffb16ac | SRAM |
+| Flash | flash_string | 0x3f407d08 | Flash |
+| Heap | heap_ptr | 0x3ffb526c | SRAM |
 
 **Table 2.2: Memory Usage Summary**
 
 | Memory Type | Free Size (bytes) | Total Size (bytes) |
 |-------------|-------------------|--------------------|
-| Internal SRAM | _________ | 520,192 |
-| Flash Memory | _________ | varies |
-| DMA Memory | _________ | varies |
+| Internal SRAM | 380136 bytes | 520,192 |
+| Flash Memory | 0 bytes | varies |
+| DMA Memory | 303088 bytes | varies |
 
 ### คำถามวิเคราะห์ (ง่าย)
 
 1. **Memory Types**: SRAM และ Flash Memory ใช้เก็บข้อมูลประเภทไหน?
+   SRAM	ตัวแปรชั่วคราว, Heap, Stack Flash	โปรแกรม, const ข้อมูลถาวร
 2. **Address Ranges**: ตัวแปรแต่ละประเภทอยู่ใน address range ไหน?
+   const (เช่นข้อความคงที่)	Flash	0x3F400000 ~ 0x3F7FFFFF
+   Global/Static	SRAM	0x3FFB0000 ~ 0x3FFFC000
+   Stack (เช่น local variable)	SRAM	0x3FFAE000 ~ 0x3FFB0000
+   Heap (malloc/calloc)	SRAM/PSRAM	0x3FFAE6E0 ~ ขึ้นไป
+   DRAM_ATTR	DRAM (SRAM)	0x3FFB0000 ~ 0x40000000
+   IRAM (Instruction RAM)	IRAM	0x40080000 ~ 0x400A0000
+   Flash (Executable Code)	Flash	0x400D0000 ~ 0x40400000
 3. **Memory Usage**: ESP32 มี memory ทั้งหมดเท่าไร และใช้ไปเท่าไร?
-
+   DRAM	320 KB	~9 KB static + dynamic heap ~100–150 KB
+   IRAM	128 KB	~24 KB
+   Flash	≥ 4 MB	~206 KB
+   Heap ว่างอยู่	N/A	~100–250 KB (เปลี่ยนแปลง runtime)
 ---
 
 ## 🔬 การทดลองที่ 3: การศึกษา Cache Performance
